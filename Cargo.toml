@@ -29,6 +29,8 @@ tracing = ["dep:tracing", "dep:tracing-futures"]
 sentry = ["sentry-core", "ulid?/uuid", "uuid"]
 ## Support Prometheus metrics
 prometheus = ["metrics", "metrics-exporter-prometheus"]
+## Support OpenTelemetry metrics
+opentelemetry = ["opentelemetry/metrics"]
 ## Support direct retrying jobs
 retry = ["tower/retry"]
 ## Support timeouts on jobs
@@ -43,6 +45,7 @@ catch-panic = []
 layers = [
   "sentry",
   "prometheus",
+  "opentelemetry",
   "tracing",
   "retry",
   "timeout",
@@ -110,6 +113,7 @@ members = [
   "examples/postgres",
   "examples/axum",
   "examples/prometheus",
+  "examples/opentelemetry",
   "examples/tracing",
   "examples/async-std-runtime",
   "examples/basics",
@@ -134,6 +138,7 @@ tracing-futures = { version = "0.2.5", optional = true, default-features = false
 sentry-core = { version = "0.45.0", optional = true, default-features = false }
 metrics = { version = "0.24.0", optional = true, default-features = false }
 metrics-exporter-prometheus = { version = "0.17", optional = true, default-features = false }
+opentelemetry = { version = "0.31.0", optional = true, default-features = false, features = ["metrics"] }
 thiserror = "2.0.0"
 futures = "0.3.30"
 pin-project-lite = "0.2.14"
