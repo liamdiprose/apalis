@@ -21,11 +21,11 @@ impl<S> Layer<S> for OpenTelemetryMetricsLayer {
     fn layer(&self, service: S) -> Self::Service {
         let meter = global::meter("apalis");
 
-        let task_counter = meter.u64_counter("apalis_tasks")
+        let task_counter = meter.u64_counter("messaging.client.consumed.messages")
                                    .build();
 
         let duration_histogram = meter
-            .f64_histogram("apalis_task_duration")
+            .f64_histogram("messaging.process.duration")
             .with_unit("s")
             .with_boundaries(vec![0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0, 60.0, 120.0, 300.0, 600.0])
             .build();
@@ -114,10 +114,13 @@ where
             .unwrap_or_else(|| "Err".to_string());
 
         let attributes = [
-            KeyValue::new("name", this.operation.to_string()),
-            KeyValue::new("namespace", this.job_type.to_string()),
-            KeyValue::new("status", status),
+            KeyValue::new("messaging.system", "apalis"),
+            KeyValue::new("messaging.operation.name", "process"),
+            KeyValue::new("messaging.destination.partition.id", this.operation.to_string()),
+            KeyValue::new("messaging.destination.name", this.job_type.to_string()),
+            KeyValue::new("apalis.status", status),
         ];
+
         this.task_counter.add(1, &attributes);
         this.duration_histogram.record(latency, &attributes);
 
